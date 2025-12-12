@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chat Orthoplay</title>
+  <meta name="description" content="Chat embebible para consultas de tratamientos y precios (vía backend seguro)." />
+  <style>
+    :root{
+      --bg:#0b0f17; --card:#121a27; --text:#e9eef7; --muted:#aab6c6; --b:#223044;
+      --accent:#5eead4; --accent2:#60a5fa; --r:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans); color:var(--text); background:var(--bg);
+      background: radial-gradient(1000px 520px at 12% -12%, rgba(94,234,212,.16), transparent 60%),
+                  radial-gradient(900px 500px at 92% 0%, rgba(96,165,250,.14), transparent 55%),
+                  var(--bg);
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:18px}
+    .card{
+      background: rgba(18,26,39,.88);
+      border:1px solid var(--b);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .top{
+      padding:14px 14px 10px;
+      border-bottom:1px solid rgba(34,48,68,.75);
+      display:flex; gap:12px; flex-wrap:wrap; align-items:flex-start; justify-content:space-between;
+    }
+    .title{display:flex;flex-direction:column;gap:6px}
+    .title strong{font-size:16px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.35}
+    .fields{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input, select{
+      padding:10px 12px; border-radius:14px; border:1px solid rgba(34,48,68,.85);
+      background: rgba(11,15,23,.55); color:var(--text); outline:none; font-size:14px;
+    }
+    input:focus, select:focus{border-color: rgba(94,234,212,.55)}
+    .body{padding:14px}
+    .chat{
+      height: 560px;
+      overflow:auto;
+      padding:12px;
+      border-radius: 14px;
+      background: rgba(11,15,23,.55);
+      border:1px solid rgba(34,48,68,.7);
+    }
+    .msg{
+      max-width: 92%;
+      margin: 8px 0;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(34,48,68,.65);
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height:1.35;
+    }
+    .me{margin-left:auto;background: rgba(96,165,250,.12); border-color: rgba(96,165,250,.22);}
+    .bot{margin-right:auto;background: rgba(94,234,212,.10); border-color: rgba(94,234,212,.20);}
+    .meta{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      margin-bottom:6px; font-size:12px; color:var(--muted);
+    }
+    .row{display:flex;gap:10px;margin-top:10px}
+    textarea{
+      flex:1; resize:none; min-height:44px; max-height:140px;
+      padding:10px 12px; border-radius:14px; border:1px solid rgba(34,48,68,.85);
+      background: rgba(11,15,23,.55); color:var(--text); outline:none; font-size:14px;
+      line-height:1.25;
+    }
+    textarea:focus{border-color: rgba(94,234,212,.55)}
+    button{
+      min-width:120px;
+      border-radius:14px;
+      border:1px solid rgba(94,234,212,.55);
+      background: rgba(94,234,212,.12);
+      color:var(--text);
+      font-weight:800;
+      cursor:pointer;
+      padding: 10px 12px;
+    }
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .foot{margin-top:10px;color:var(--muted);font-size:12px}
+    code{font-family:var(--mono);font-size:12px;color:#c8d4ea}
+    .warn{
+      margin-top:10px;padding:10px 12px;border-radius:12px;
+      border:1px solid rgba(251,113,133,.35); background: rgba(251,113,133,.08); color:#ffd7de;
+      font-size:13px; line-height:1.35;
+      display:none;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="top">
+        <div class="title">
+          <strong>Asesor Orthoplay</strong>
+          <div class="muted">Consultas de tratamientos y precios (según sucursal). Embebible en iframe.</div>
+          <div class="muted">Backend: <code id="apiLabel"></code></div>
+        </div>
+
+        <div class="fields">
+          <input id="clinic" placeholder="Sucursal (opcional)" />
+          <select id="mode" title="Modo">
+            <option value="prices">Precios & tratamientos</option>
+            <option value="info">Info general</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="body">
+        <div id="chat" class="chat" aria-live="polite"></div>
+
+        <div class="row">
+          <textarea id="msg" placeholder="Escribe tu pregunta… (Enter envía / Shift+Enter salto)"></textarea>
+          <button id="send">Enviar</button>
+        </div>
+
+        <div id="warn" class="warn"></div>
+        <div class="foot">
+          ⚠️ Este archivo es público. El API key <b>no</b> va aquí. El chat debe pegarle a tu backend/proxy.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /******************************************************************
+   * CONFIG: pega tu endpoint del backend proxy (NO DeepSeek directo)
+   ******************************************************************/
+  const BACKEND_CHAT_URL = "https://TU-BACKEND.com/api/chat"; // <-- CAMBIA ESTO
+
+  const $ = (id) => document.getElementById(id);
+
+  function timeStr(){
+    return new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+  }
+
+  function add(role, text){
+    const wrap = $("chat");
+    const box = document.createElement("div");
+    box.className = "msg " + (role === "me" ? "me" : "bot");
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.innerHTML = `<span>${role === "me" ? "Tú" : "Asesor"}</span><span>${timeStr()}</span>`;
+
+    const body = document.createElement("div");
+    body.textContent = text;
+
+    box.appendChild(meta);
+    box.appendChild(body);
+    wrap.appendChild(box);
+    wrap.scrollTop = wrap.scrollHeight;
+  }
+
+  function setSending(v){
+    $("send").disabled = v;
+    $("send").textContent = v ? "Enviando…" : "Enviar";
+  }
+
+  async function send(){
+    const text = $("msg").value.trim();
+    if(!text) return;
+
+    $("msg").value = "";
+    add("me", text);
+    setSending(true);
+    $("warn").style.display = "none";
+    $("warn").textContent = "";
+
+    try{
+      const res = await fetch(BACKEND_CHAT_URL, {
+        method: "POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({
+          message: text,
+          clinic: $("clinic").value.trim() || null,
+          mode: $("mode").value
+        })
+      });
+
+      if(!res.ok){
+        const raw = await res.text().catch(()=> "");
+        throw new Error(`HTTP ${res.status} ${raw}`);
+      }
+
+      const data = await res.json();
+      const answer = data?.answer ?? data?.message ?? "No recibí respuesta del servidor.";
+      add("bot", String(answer));
+
+    }catch(e){
+      const msg =
+        "No pude conectar con el backend del chat.\n\n" +
+        "• Revisa BACKEND_CHAT_URL\n" +
+        "• Asegura CORS (Access-Control-Allow-Origin)\n" +
+        "• El endpoint debe responder JSON: {answer:\"...\"}\n\n" +
+        "Detalle: " + String(e.message || e);
+
+      add("bot", msg);
+      $("warn").style.display = "block";
+      $("warn").textContent =
+        "Fallo de conexión. Verifica tu backend/proxy y CORS. " +
+        "Si quieres, dime dónde lo alojarás (Cloudflare/Vercel/Render) y te lo dejo listo.";
+    }finally{
+      setSending(false);
+    }
+  }
+
+  $("send").addEventListener("click", send);
+  $("msg").addEventListener("keydown", (ev) => {
+    if(ev.key === "Enter" && !ev.shiftKey){
+      ev.preventDefault();
+      send();
+    }
+  });
+
+  $("apiLabel").textContent = BACKEND_CHAT_URL;
+
+  add("bot",
+    "¡Hola! 👋\n" +
+    "Dime qué tratamiento te interesa y en qué sucursal estás.\n" +
+    "Si no sabes la sucursal, dime tu ciudad y te oriento."
+  );
+</script>
+</body>
+</html>
