@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Proyectos del equipo de Orthoplay</title>
+  <meta name="description" content="Índice automático de archivos en GitHub Pages." />
+  <style>
+    :root{
+      --bg:#0b0f17; --card:#121a27; --text:#e9eef7; --muted:#aab6c6; --border:#223044;
+      --accent:#5eead4; --accent2:#60a5fa; --shadow: 0 10px 30px rgba(0,0,0,.35); --r:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:var(--sans); color:var(--text);
+      background: radial-gradient(1000px 500px at 15% -10%, rgba(94,234,212,.18), transparent 60%),
+                  radial-gradient(900px 500px at 90% 0%, rgba(96,165,250,.14), transparent 55%),
+                  var(--bg);
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:26px 16px 60px}
+    header{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:16px}
+    h1{margin:0;font-size:26px}
+    .sub{margin:6px 0 0;color:var(--muted);line-height:1.35}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:999px;
+      border:1px solid var(--border); background:rgba(18,26,39,.6); box-shadow:var(--shadow);
+      font-size:13px; color:var(--muted)
+    }
+    .dot{width:8px;height:8px;border-radius:99px;background:var(--accent);box-shadow:0 0 18px rgba(94,234,212,.55)}
+    .card{background:rgba(18,26,39,.85);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(34,48,68,.75)}
+    .left{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .crumbs{font-family:var(--mono);font-size:12px;color:var(--muted)}
+    .crumbs a{color:var(--accent2);text-decoration:none}
+    .crumbs a:hover{text-decoration:underline}
+    .right{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    input{
+      padding:10px 12px; border-radius:14px; border:1px solid rgba(34,48,68,.85);
+      background: rgba(11,15,23,.55); color:var(--text); outline:none; min-width: 260px;
+    }
+    input:focus{border-color: rgba(94,234,212,.55)}
+    .btn{
+      display:inline-flex; align-items:center; gap:8px; padding:10px 12px; border-radius:14px;
+      border:1px solid rgba(34,48,68,.85); background: rgba(11,15,23,.55); color:var(--text);
+      text-decoration:none; font-size:13px;
+    }
+    .btn:hover{border-color: rgba(96,165,250,.55)}
+    .content{padding:14px}
+    .grid{display:grid;gap:10px;grid-template-columns: repeat(2, minmax(0, 1fr))}
+    @media(max-width:740px){.grid{grid-template-columns:1fr} input{min-width:100%}}
+    .item{
+      border:1px solid rgba(34,48,68,.7); background: rgba(11,15,23,.45); border-radius:14px;
+      padding:12px; transition: transform .12s ease, border-color .12s ease;
+    }
+    .item:hover{transform: translateY(-2px); border-color: rgba(94,234,212,.45)}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .name{font-weight:800}
+    .tag{font-size:12px;color:var(--muted);padding:4px 8px;border-radius:999px;border:1px solid rgba(34,48,68,.8)}
+    .desc{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .links{margin-top:10px;display:flex;gap:10px;flex-wrap:wrap}
+    .links a{color:inherit}
+    .status{color:var(--muted);font-size:13px;line-height:1.35}
+    .err{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid rgba(251,113,133,.35);
+         background: rgba(251,113,133,.08); color:#ffd7de; font-size:13px; line-height:1.35}
+    footer{margin-top:14px;color:var(--muted);font-size:12px}
+    code{font-family:var(--mono)}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>harryjohnsonplay2026-cloud</h1>
+        <p class="sub">Índice automático de archivos en GitHub Pages (se actualiza con cada commit).</p>
+      </div>
+      <div class="pill"><span class="dot"></span><span>Auto-index activo</span></div>
+    </header>
+
+    <section class="card">
+      <div class="bar">
+        <div class="left">
+          <div class="crumbs" id="crumbs"></div>
+        </div>
+        <div class="right">
+          <input id="q" placeholder="Buscar archivo o carpeta… (ej. html, promo, chat, abril)" />
+          <a class="btn" id="viewRepo" target="_blank" rel="noopener">Ver repo</a>
+          <a class="btn" id="refresh" href="./index.html">Recargar</a>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="status" id="status">Cargando estructura del repo…</div>
+        <div class="grid" id="list" style="margin-top:12px;"></div>
+        <div class="err" id="err" style="display:none;"></div>
+
+        <footer>
+          Nota: este índice usa la API pública de GitHub (sin token). Si haces demasiadas recargas seguidas,
+          podrías topar con límites temporales de la API.
+        </footer>
+      </div>
+    </section>
+  </div>
+
+<script>
+/** CONFIG (tu caso) **/
+const OWNER = "harryjohnsonplay2026-cloud";
+const REPO  = "harryjohnsonplay2026-cloud.github.io";
+const BRANCH = "main"; // si tu branch default no es main, cambia a "master"
+
+/** GitHub API **/
+const API_REPO  = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const API_TREE  = (sha) => `${API_REPO}/git/trees/${encodeURIComponent(sha)}?recursive=1`;
+
+/** Helpers **/
+const $ = (id) => document.getElementById(id);
+const escapeHtml = (s) => String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+
+function getPathParam(){
+  const u = new URL(location.href);
+  const p = (u.searchParams.get("path") || "").replace(/^\/+|\/+$/g, "");
+  return p;
+}
+function joinPath(a,b){
+  if(!a) return b || "";
+  if(!b) return a || "";
+  return `${a}/${b}`;
+}
+function isIndexFile(path){
+  return /(^|\/)index\.html$/i.test(path);
+}
+function isHidden(path){
+  return /(^|\/)\./.test(path); // carpetas/archivos que empiezan con punto
+}
+function toPagesUrl(path){
+  // Para user pages: https://OWNER.github.io/ + path
+  const base = `https://${OWNER}.github.io/`;
+  return base + path;
+}
+function toBrowseUrl(path){
+  return `https://github.com/${OWNER}/${REPO}/blob/${BRANCH}/${path}`;
+}
+function toTreeUrl(path){
+  return `https://github.com/${OWNER}/${REPO}/tree/${BRANCH}/${path}`;
+}
+
+function renderCrumbs(path){
+  const parts = path ? path.split("/") : [];
+  let html = `<a href="./index.html">/</a>`;
+  let accum = "";
+  for(const part of parts){
+    accum = joinPath(accum, part);
+    html += ` / <a href="./index.html?path=${encodeURIComponent(accum)}">${escapeHtml(part)}</a>`;
+  }
+  $("crumbs").innerHTML = html;
+}
+
+function fileTag(path, type){
+  const ext = (path.split(".").pop() || "").toLowerCase();
+  if(type === "tree") return "CARPETA";
+  if(ext === "html") return "HTML";
+  if(ext === "md") return "MD";
+  if(["png","jpg","jpeg","webp","svg","gif"].includes(ext)) return "IMG";
+  if(["css","js","json","txt"].includes(ext)) return ext.toUpperCase();
+  return "ARCHIVO";
+}
+
+function renderList(items, currentPath, query){
+  const q = (query || "").trim().toLowerCase();
+
+  // Separar carpetas y archivos
+  const folders = [];
+  const files = [];
+
+  for(const it of items){
+    const name = it.name;
+
+    // Filtro por búsqueda
+    if(q && !it.path.toLowerCase().includes(q)) continue;
+
+    if(it.type === "tree") folders.push(it);
+    else files.push(it);
+  }
+
+  // Orden: carpetas primero, luego archivos, alfabético
+  folders.sort((a,b)=>a.name.localeCompare(b.name));
+  files.sort((a,b)=>a.name.localeCompare(b.name));
+
+  const cardHtml = (it) => {
+    const tag = fileTag(it.path, it.type);
+    const isDir = it.type === "tree";
+
+    // Link principal:
+    // - carpeta: navega con ?path=
+    // - archivo html: abre en Pages
+    // - otro archivo: abre en GitHub (blob)
+    let primaryHref = "#";
+    let primaryLabel = "Abrir";
+
+    if(isDir){
+      primaryHref = `./index.html?path=${encodeURIComponent(it.path)}`;
+      primaryLabel = "Entrar";
+    }else{
+      const ext = (it.name.split(".").pop() || "").toLowerCase();
+      if(ext === "html"){
+        primaryHref = toPagesUrl(it.path);
+        primaryLabel = "Ver";
+      }else{
+        primaryHref = toBrowseUrl(it.path);
+        primaryLabel = "Ver";
+      }
+    }
+
+    const secondaryHref = isDir ? toTreeUrl(it.path) : toBrowseUrl(it.path);
+
+    return `
+      <div class="item">
+        <div class="top">
+          <div class="name">${escapeHtml(it.name)}</div>
+          <span class="tag">${tag}</span>
+        </div>
+        <div class="desc">${escapeHtml(it.path)}</div>
+        <div class="links">
+          <a class="btn" href="${primaryHref}" target="${isDir ? "_self" : "_blank"}" rel="noopener">${primaryLabel}</a>
+          <a class="btn" href="${secondaryHref}" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    `;
+  };
+
+  const all = folders.concat(files);
+  $("list").innerHTML = all.length ? all.map(cardHtml).join("") : `<div class="status">No hay resultados.</div>`;
+}
+
+async function loadTree(){
+  $("err").style.display = "none";
+  $("status").textContent = "Cargando estructura del repo…";
+
+  $("viewRepo").href = `https://github.com/${OWNER}/${REPO}`;
+
+  // 1) Obtener info del repo (default_branch y/o SHA)
+  const repoRes = await fetch(API_REPO, { headers: { "Accept": "application/vnd.github+json" }});
+  if(!repoRes.ok) throw new Error(`No pude leer el repo (${repoRes.status}). ¿Es público?`);
+  const repo = await repoRes.json();
+
+  const defaultBranch = repo.default_branch || BRANCH;
+
+  // 2) Obtener el SHA del árbol del branch (usando ref)
+  // Usamos /branches/{branch} para obtener commit->commit->tree.sha
+  const brRes = await fetch(`${API_REPO}/branches/${encodeURIComponent(defaultBranch)}`, {
+    headers: { "Accept": "application/vnd.github+json" }
+  });
+  if(!brRes.ok) throw new Error(`No pude leer el branch (${brRes.status}).`);
+  const br = await brRes.json();
+  const treeSha = br?.commit?.commit?.tree?.sha;
+  if(!treeSha) throw new Error("No encontré el tree SHA del branch.");
+
+  // 3) Tree recursivo
+  const treeRes = await fetch(API_TREE(treeSha), { headers: { "Accept": "application/vnd.github+json" }});
+  if(!treeRes.ok) throw new Error(`No pude leer el árbol (${treeRes.status}).`);
+  const tree = await treeRes.json();
+  if(tree.truncated) {
+    // Si el repo es enorme, GitHub puede truncar (raro en tu caso)
+    console.warn("Tree truncado. Considera filtrar por carpeta.");
+  }
+
+  return { tree: tree.tree || [], branch: defaultBranch };
+}
+
+function buildIndex(treeEntries){
+  // Convertir el tree en estructura navegable por "path"
+  // treeEntries: [{path, type: "tree"|"blob"}]
+  const all = treeEntries
+    .filter(e => e && e.path && !isHidden(e.path))
+    .filter(e => !isIndexFile(e.path)); // no listar el index en el índice por defecto
+
+  // Creamos mapas por carpeta actual
+  const map = new Map(); // key: folderPath ("" root) => {folders:Set, files:Set}
+  function ensure(folder){
+    if(!map.has(folder)) map.set(folder, { folders:new Map(), files:new Map() });
+    return map.get(folder);
+  }
+
+  for(const e of all){
+    const parts = e.path.split("/");
+    const name = parts[parts.length - 1];
+    const folder = parts.slice(0, -1).join("/");
+    const parent = ensure(folder);
+
+    if(e.type === "tree"){
+      parent.folders.set(name, { name, path: e.path, type:"tree" });
+    }else{
+      parent.files.set(name, { name, path: e.path, type:"blob" });
+    }
+
+    // Asegura que todas las carpetas existan en el map para navegación
+    let accum = "";
+    for(let i=0;i<parts.length-1;i++){
+      accum = accum ? (accum + "/" + parts[i]) : parts[i];
+      ensure(accum);
+    }
+    ensure("");
+  }
+
+  return map;
+}
+
+(async function init(){
+  const currentPath = getPathParam();
+  renderCrumbs(currentPath);
+
+  $("q").addEventListener("input", () => {
+    const q = $("q").value;
+    const bucket = indexMap.get(currentPath) || { folders:new Map(), files:new Map() };
+    const items = [...bucket.folders.values(), ...bucket.files.values()];
+    renderList(items, currentPath, q);
+  });
+
+  try{
+    const { tree, branch } = await loadTree();
+    $("status").textContent = `Listo ✅ (branch: ${branch})`;
+
+    window.indexMap = buildIndex(tree);
+
+    const bucket = indexMap.get(currentPath) || { folders:new Map(), files:new Map() };
+    const items = [...bucket.folders.values(), ...bucket.files.values()];
+    renderList(items, currentPath, $("q").value);
+
+  }catch(err){
+    $("status").textContent = "Error al cargar.";
+    $("err").style.display = "block";
+    $("err").innerHTML =
+      `<b>No pude generar el índice automático.</b><br><br>` +
+      `${escapeHtml(err.message || String(err))}<br><br>` +
+      `Tips:<br>• Verifica que el repo sea <b>público</b><br>• Si tu branch no es <code>main</code>, cambia <code>BRANCH</code><br>` +
+      `• Si se bloquea por rate limit, espera un poco y recarga`;
+  }
+})();
+</script>
+</body>
+</html>
