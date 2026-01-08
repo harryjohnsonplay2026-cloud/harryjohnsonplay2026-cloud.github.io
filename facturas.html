@@ -22,6 +22,10 @@
     .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
     .btn-help { display: inline-block; background-color: #e0e0e0; color: var(--color-secondary); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 5px; border: none; cursor: pointer; }
     
+    /* PANTALLA DE ÉXITO */
+    .success-message { display: none; text-align: center; padding: 40px; }
+    .success-icon { font-size: 50px; color: var(--color-secondary); margin-bottom: 20px; }
+
     /* MODAL */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
     .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
@@ -33,6 +37,15 @@
 </style>
 
 <div class="factura-container">
+    
+    <div id="successView" class="success-message">
+        <div class="success-icon">✓</div>
+        <h3 style="color: var(--color-secondary)">¡Solicitud Enviada!</h3>
+        <p>Hemos recibido tus datos y archivos correctamente.</p>
+        <p>Tu factura llegará a tu correo en breve.</p>
+        <button class="btn-help" onclick="reiniciarFormulario()">Enviar otra solicitud</button>
+    </div>
+
     <div id="formView">
         <h2>Solicitud de Facturación</h2>
         
@@ -41,9 +54,6 @@
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
             <input type="hidden" name="_template" value="table">
-            
-            <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html"> 
-
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label>Nombre Completo del Paciente / Razón Social</label>
@@ -117,7 +127,7 @@
                     <label>Uso del CFDI</label>
                     <select name="UsoCFDI" id="usoCfdiSelect" required>
                         <option value="G03 - Gastos en general">G03 - Gastos en general</option>
-                        <option value="D01 - Honorarios médicos">D01 - Honorarios médicos, dentales...</option>
+                        <option value="D01 - Honorarios médicos">D01 - Honorarios médicos...</option>
                         <option value="S01 - Sin efectos fiscales">S01 - Sin efectos fiscales</option>
                         <option value="Otro">Otro (Especificar)</option>
                     </select>
@@ -165,21 +175,22 @@
         
         <div id="modalBtns" class="modal-buttons">
             <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="enviarFormularioReal()">Sí, Enviar</button>
+            <button class="btn-confirm" onclick="enviarFormularioAJAX()">Sí, Enviar</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Referencias
     const form = document.getElementById('billingForm');
     const modal = document.getElementById('confirmModal');
     const loader = document.getElementById('loaderSpinner');
     const modalBtns = document.getElementById('modalBtns');
+    const formView = document.getElementById('formView');
+    const successView = document.getElementById('successView');
     const selectCFDI = document.getElementById('usoCfdiSelect');
     const inputCFDI = document.getElementById('otroCfdiInput');
 
-    // 1. Lógica "Otro" CFDI
+    // Lógica "Otro" CFDI
     if(selectCFDI) {
         selectCFDI.addEventListener('change', function() {
             if (this.value === 'Otro') {
@@ -193,32 +204,72 @@
         });
     }
 
-    // 2. Abrir Modal (Validando que los campos required estén llenos)
+    // ABRIR MODAL
     function abrirModalConfirmacion() {
         if (form.checkValidity()) {
             modal.style.display = 'flex';
         } else {
-            // Muestra las alertas rojas del navegador si falta algo
             form.reportValidity();
         }
     }
 
-    // 3. Cerrar Modal
+    // CERRAR MODAL
     function cerrarModal() {
         modal.style.display = 'none';
     }
 
-    // 4. Enviar Realmente (SOLUCIÓN AL ERROR POST)
-    function enviarFormularioReal() {
-        loader.style.display = 'block';
-        modalBtns.style.display = 'none';
-        
-        // ENVÍO DIRECTO: Evita el error "Form should POST"
-        form.submit();
-    }
-
-    // Cerrar clic afuera
+    // CERRAR SI CLIC AFUERA
     window.onclick = function(event) {
         if (event.target == modal) cerrarModal();
+    }
+
+    // === LÓGICA DE ENVÍO AJAX (SIN RECARGA) ===
+    function enviarFormularioAJAX() {
+        loader.style.display = 'block';
+        modalBtns.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        fetch("https://formsubmit.co/ajax/cris.ordonez.santiago@gmail.com", {
+            method: "POST",
+            body: formData,
+            headers: { 
+                'Accept': 'application/json' // Importante para que no redireccione
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // ÉXITO
+                cerrarModal();
+                mostrarExito();
+            } else {
+                // ERROR
+                alert("Hubo un error al enviar. Intenta de nuevo.");
+                restaurarModal();
+            }
+        })
+        .catch(error => {
+            console.log(error);
+            alert("Error de conexión.");
+            restaurarModal();
+        });
+    }
+
+    function mostrarExito() {
+        formView.style.display = 'none';
+        successView.style.display = 'block';
+        // Resetear formulario
+        form.reset();
+        restaurarModal(); // Para la próxima vez
+    }
+
+    function reiniciarFormulario() {
+        successView.style.display = 'none';
+        formView.style.display = 'block';
+    }
+
+    function restaurarModal() {
+        loader.style.display = 'none';
+        modalBtns.style.display = 'flex';
     }
 </script>
