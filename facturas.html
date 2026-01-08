@@ -6,7 +6,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 <style>
-    /* ... TUS ESTILOS (IGUAL QUE ANTES) ... */
     :root { --color-primary: #fbff0a; --color-secondary: #04217f; --color-text: #333; --color-bg: #f4f4f4; }
     * { box-sizing: border-box; }
     body { font-family: "Libre Franklin", sans-serif; background-color: var(--color-bg); margin: 0; padding: 20px; color: var(--color-text); }
@@ -75,7 +74,32 @@
                             <option value="Cardel, Ver">Cardel</option>
                             <option value="Orizaba, Ver">Orizaba</option>
                         </optgroup>
-                        <optgroup label="Puebla"><option value="Teziutlan, Pue">Teziutlán</option></optgroup>
+                        <optgroup label="Puebla">
+                            <option value="Teziutlan, Pue">Teziutlán</option>
+                            <option value="Zacatlan, Pue">Zacatlán</option>
+                            <option value="Cd. de Libres, Pue">Cd. de Libres</option>
+                            <option value="Huauchinango, Pue">Huauchinango</option>
+                        </optgroup>
+                        <optgroup label="Hidalgo">
+                            <option value="Pachuca, Hgo">Pachuca</option>
+                            <option value="Tulancingo, Hgo">Tulancingo</option>
+                        </optgroup>
+                        <optgroup label="Yucatán">
+                            <option value="Merida, Yuc">Mérida</option>
+                            <option value="Kanasin, Yuc">Kanasín</option>
+                            <option value="Valladolid, Yuc">Valladolid</option>
+                        </optgroup>
+                        <optgroup label="Estado de México">
+                            <option value="Toluca, Edomex">Toluca</option>
+                        </optgroup>
+                        <optgroup label="Michoacán">
+                            <option value="Cd. Hidalgo, Mich">Cd. Hidalgo</option>
+                            <option value="Maravatio, Mich">Maravatío</option>
+                            <option value="Zitacuaro, Mich">Zitácuaro</option>
+                        </optgroup>
+                        <optgroup label="Morelos">
+                            <option value="Cuernavaca, Mor">Cuernavaca</option>
+                        </optgroup>
                     </select>
                 </div>
 
@@ -93,7 +117,7 @@
                     <label>Uso del CFDI</label>
                     <select name="UsoCFDI" id="usoCfdiSelect" required>
                         <option value="G03 - Gastos en general">G03 - Gastos en general</option>
-                        <option value="D01 - Honorarios médicos">D01 - Honorarios médicos...</option>
+                        <option value="D01 - Honorarios médicos">D01 - Honorarios médicos, dentales...</option>
                         <option value="S01 - Sin efectos fiscales">S01 - Sin efectos fiscales</option>
                         <option value="Otro">Otro (Especificar)</option>
                     </select>
@@ -169,13 +193,12 @@
         });
     }
 
-    // 2. Abrir Modal (Validando primero)
+    // 2. Abrir Modal (Validando que los campos required estén llenos)
     function abrirModalConfirmacion() {
-        // Truco: Verificar si el formulario es válido usando la validación nativa del navegador
         if (form.checkValidity()) {
             modal.style.display = 'flex';
         } else {
-            // Si falta algo, el navegador muestra sus alertas rojas estándar
+            // Muestra las alertas rojas del navegador si falta algo
             form.reportValidity();
         }
     }
@@ -185,18 +208,16 @@
         modal.style.display = 'none';
     }
 
-    // 4. Enviar Realmente
+    // 4. Enviar Realmente (SOLUCIÓN AL ERROR POST)
     function enviarFormularioReal() {
-        // Ocultar botones, mostrar spinner
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
         
-        // ENVÍO NATIVO: Esto es lo que evita el error.
-        // Se salta cualquier fetch/ajax y manda el POST puro.
+        // ENVÍO DIRECTO: Evita el error "Form should POST"
         form.submit();
     }
 
-    // Cerrar si clic afuera
+    // Cerrar clic afuera
     window.onclick = function(event) {
         if (event.target == modal) cerrarModal();
     }
