@@ -1,0 +1,32 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Prueba de Conexión</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;700&display=swap" rel="stylesheet">
+<style>
+    body { font-family: "Libre Franklin", sans-serif; padding: 20px; text-align: center; }
+    .test-box { border: 2px solid #04217f; padding: 20px; border-radius: 10px; max-width: 500px; margin: 0 auto; }
+    button { background: #04217f; color: white; padding: 15px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; width: 100%; margin-top: 10px; }
+    input { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+</style>
+
+<div class="test-box">
+    <h3>🛠️ Prueba de Diagnóstico</h3>
+    <p>Sube 1 sola imagen ligera (menos de 2MB) para probar.</p>
+
+    <form action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data">
+        
+        <input type="hidden" name="_url" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html">
+        <input type="hidden" name="_captcha" value="false">
+
+        <label>Nombre:</label>
+        <input type="text" name="Nombre" value="Prueba Cristian" required>
+
+        <label>Email:</label>
+        <input type="email" name="Email" placeholder="tu@email.com" required>
+
+        <label>Ticket (Sin corchetes):</label>
+        <input type="file" name="TicketClinica" accept="image/*,.pdf" required>
+
+        <button type="submit">Enviar Prueba</button>
+    </form>
+</div>
