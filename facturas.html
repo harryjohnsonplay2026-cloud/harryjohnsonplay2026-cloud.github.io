@@ -55,24 +55,22 @@
     
     <div id="successView" class="success-message">
         <div class="success-icon">✓</div>
-        <h3 style="color: var(--color-secondary)">¡Solicitud Enviada!</h3>
-        <p>Hemos recibido tus datos y archivos correctamente.</p>
+        <h3 style="color: var(--color-secondary)">¡Solicitud Recibida!</h3>
+        <p>Hemos recibido tus archivos correctamente.</p>
         <p>Tu factura llegará a tu correo en breve.</p>
-        <button class="btn-help" onclick="reiniciarFormulario()">Enviar otra solicitud</button>
+        <button class="btn-help" onclick="location.href='https://harryjohnsonplay2026-cloud.github.io/facturas.html'">Enviar otra solicitud</button>
     </div>
 
     <div id="formView">
         <h2>Solicitud de Facturación</h2>
         
-        <iframe name="hiddenFrame" style="display:none;"></iframe>
-
-        <form id="billingForm" action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data" target="hiddenFrame">
+        <form id="billingForm" action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data">
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
             <input type="hidden" name="_template" value="table">
             
-            <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html"> 
+            <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html?enviado=1"> 
 
             <div class="form-grid">
                 <div class="form-group full-width">
@@ -195,7 +193,7 @@
         
         <div id="modalBtns" class="modal-buttons">
             <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="enviarFormularioIframe()">Sí, Enviar</button>
+            <button class="btn-confirm" onclick="enviarFormularioNativo()">Sí, Enviar</button>
         </div>
     </div>
 </div>
@@ -209,9 +207,19 @@
     const successView = document.getElementById('successView');
     const selectCFDI = document.getElementById('usoCfdiSelect');
     const inputCFDI = document.getElementById('otroCfdiInput');
-    
-    // Bandera para saber si ya estamos enviando
-    let enviando = false;
+
+    // 1. DETECTOR DE ÉXITO AL CARGAR LA PÁGINA
+    // Si la URL tiene ?enviado=1, significa que venimos de un envío exitoso
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('enviado')) {
+            // Ocultamos el form y mostramos el éxito directamente
+            formView.style.display = 'none';
+            successView.style.display = 'block';
+            // Limpiamos la URL para que si recarga no siga saliendo (opcional, pero estético)
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    };
 
     // Lógica "Otro" CFDI
     if(selectCFDI) {
@@ -236,51 +244,16 @@
     }
 
     function cerrarModal() {
-        if (!enviando) { // Solo dejar cerrar si no estamos a medio envío
-            modal.style.display = 'none';
-        }
+        modal.style.display = 'none';
     }
 
-    // === LÓGICA DE ENVÍO CON IFRAME (SOLUCIÓN ARCHIVOS) ===
-    function enviarFormularioIframe() {
-        enviando = true;
+    // ENVÍO NATIVO (100% FIABLE CON ARCHIVOS)
+    function enviarFormularioNativo() {
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
-
-        // 1. Escuchar cuando el iframe termine de cargar (eso significa que el envío terminó)
-        const iframe = document.getElementsByName('hiddenFrame')[0];
         
-        // Función que se ejecuta al terminar el envío
-        iframe.onload = function() {
-            if (enviando) { // Verificar que realmente estábamos enviando
-                cerrarModal();
-                // Forzar cierre manual del modal en UI
-                modal.style.display = 'none';
-                mostrarExito();
-                enviando = false;
-            }
-        };
-
-        // 2. Enviar el formulario de forma nativa hacia el iframe
+        // Simplemente enviamos. La página se recargará y volverá con ?enviado=1
         form.submit();
-    }
-
-    function mostrarExito() {
-        formView.style.display = 'none';
-        successView.style.display = 'block';
-        form.reset();
-        restaurarModal();
-    }
-
-    function reiniciarFormulario() {
-        successView.style.display = 'none';
-        formView.style.display = 'block';
-        enviando = false;
-    }
-
-    function restaurarModal() {
-        loader.style.display = 'none';
-        modalBtns.style.display = 'flex';
     }
 
     window.onclick = function(event) {
