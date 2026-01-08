@@ -1,5 +1,5 @@
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Solicitud de Facturación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -8,7 +8,17 @@
 <style>
     :root { --color-primary: #fbff0a; --color-secondary: #04217f; --color-text: #333; --color-bg: #f4f4f4; }
     * { box-sizing: border-box; }
-    body { font-family: "Libre Franklin", sans-serif; background-color: var(--color-bg); margin: 0; padding: 20px; color: var(--color-text); }
+    
+    /* Agregamos touch-action para mejorar la respuesta en móviles */
+    body { 
+        font-family: "Libre Franklin", sans-serif; 
+        background-color: var(--color-bg); 
+        margin: 0; 
+        padding: 20px; 
+        color: var(--color-text);
+        touch-action: manipulation; 
+    }
+
     .factura-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--color-secondary); position: relative; }
     h2 { color: var(--color-secondary); text-align: center; margin-bottom: 25px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -17,6 +27,15 @@
     .form-group.full-width { grid-column: 1 / -1; }
     label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: var(--color-secondary); }
     input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 14px; }
+    
+    /* Evitar que el input haga zoom automático en iOS/Android al enfocar */
+    input:focus, select:focus, textarea:focus { 
+        outline: none; 
+        border-color: var(--color-secondary); 
+        box-shadow: 0 0 5px rgba(4, 33, 127, 0.2); 
+        font-size: 16px; /* Truco para evitar zoom en iOS */
+    }
+
     .btn-submit { background-color: var(--color-secondary); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
     .btn-submit:hover { background-color: #031655; }
     .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
@@ -54,6 +73,7 @@
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
             <input type="hidden" name="_template" value="table">
+
             <div class="form-grid">
                 <div class="form-group full-width">
                     <label>Nombre Completo del Paciente / Razón Social</label>
@@ -190,7 +210,6 @@
     const selectCFDI = document.getElementById('usoCfdiSelect');
     const inputCFDI = document.getElementById('otroCfdiInput');
 
-    // Lógica "Otro" CFDI
     if(selectCFDI) {
         selectCFDI.addEventListener('change', function() {
             if (this.value === 'Otro') {
@@ -204,7 +223,6 @@
         });
     }
 
-    // ABRIR MODAL
     function abrirModalConfirmacion() {
         if (form.checkValidity()) {
             modal.style.display = 'flex';
@@ -213,17 +231,14 @@
         }
     }
 
-    // CERRAR MODAL
     function cerrarModal() {
         modal.style.display = 'none';
     }
 
-    // CERRAR SI CLIC AFUERA
     window.onclick = function(event) {
         if (event.target == modal) cerrarModal();
     }
 
-    // === LÓGICA DE ENVÍO AJAX (SIN RECARGA) ===
     function enviarFormularioAJAX() {
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
@@ -234,16 +249,14 @@
             method: "POST",
             body: formData,
             headers: { 
-                'Accept': 'application/json' // Importante para que no redireccione
+                'Accept': 'application/json' 
             }
         })
         .then(response => {
             if (response.ok) {
-                // ÉXITO
                 cerrarModal();
                 mostrarExito();
             } else {
-                // ERROR
                 alert("Hubo un error al enviar. Intenta de nuevo.");
                 restaurarModal();
             }
@@ -258,9 +271,8 @@
     function mostrarExito() {
         formView.style.display = 'none';
         successView.style.display = 'block';
-        // Resetear formulario
         form.reset();
-        restaurarModal(); // Para la próxima vez
+        restaurarModal();
     }
 
     function reiniciarFormulario() {
