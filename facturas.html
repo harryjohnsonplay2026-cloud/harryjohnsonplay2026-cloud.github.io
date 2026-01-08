@@ -37,6 +37,25 @@
     .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
     .btn-help { display: inline-block; background-color: #e0e0e0; color: var(--color-secondary); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 5px; border: none; cursor: pointer; }
     
+    /* CAJA DE AVISO IMPORTANTE */
+    .alert-box {
+        background-color: #fffde7; /* Fondo amarillo muy suave */
+        border-left: 5px solid var(--color-primary); /* Borde amarillo fuerte */
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 4px;
+        font-size: 0.9em;
+        color: #555;
+        line-height: 1.5;
+    }
+    .alert-title {
+        color: var(--color-secondary);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+        font-size: 1.1em;
+    }
+
     /* PANTALLA DE ÉXITO */
     .success-message { display: none; text-align: center; padding: 40px; }
     .success-icon { font-size: 50px; color: var(--color-secondary); margin-bottom: 20px; }
@@ -64,6 +83,13 @@
     <div id="formView">
         <h2>Solicitud de Facturación</h2>
         
+        <div class="alert-box">
+            <span class="alert-title">⚠️ Información Importante</span>
+            • Solo se pueden facturar servicios realizados dentro del <strong>mes en curso</strong>.<br>
+            • Verifica que tus datos fiscales y documentos sean los correctos antes de enviar.<br>
+            • Puedes adjuntar <strong>varios tickets</strong> en una sola solicitud.
+        </div>
+
         <form id="billingForm" action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data">
             
             <input type="hidden" name="_captcha" value="false">
@@ -153,14 +179,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Ticket de la Clínica (Img/PDF)</label>
-                    <input type="file" name="TicketClinica" accept="image/*,.pdf" required>
+                    <label>Ticket(s) de la Clínica (Img/PDF)</label>
+                    <input type="file" name="TicketClinica[]" accept="image/*,.pdf" multiple required>
+                    <small style="font-size:0.75em; color:#666;">Puedes seleccionar varios archivos</small>
                 </div>
                 
                 <div class="form-group">
                     <label>Voucher / Pago (Opcional)</label>
-                    <input type="file" name="VoucherPago" accept="image/*,.pdf">
-                    <small style="font-size:0.75em; color:#666;">Adjunta tu comprobante bancario si aplica</small>
+                    <input type="file" name="VoucherPago[]" accept="image/*,.pdf" multiple>
+                    <small style="font-size:0.75em; color:#666;">Adjunta tus comprobantes bancarios</small>
                 </div>
 
                 <div class="form-group full-width">
@@ -208,15 +235,12 @@
     const selectCFDI = document.getElementById('usoCfdiSelect');
     const inputCFDI = document.getElementById('otroCfdiInput');
 
-    // 1. DETECTOR DE ÉXITO AL CARGAR LA PÁGINA
-    // Si la URL tiene ?enviado=1, significa que venimos de un envío exitoso
+    // DETECTOR DE ÉXITO
     window.onload = function() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('enviado')) {
-            // Ocultamos el form y mostramos el éxito directamente
             formView.style.display = 'none';
             successView.style.display = 'block';
-            // Limpiamos la URL para que si recarga no siga saliendo (opcional, pero estético)
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     };
@@ -247,12 +271,9 @@
         modal.style.display = 'none';
     }
 
-    // ENVÍO NATIVO (100% FIABLE CON ARCHIVOS)
     function enviarFormularioNativo() {
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
-        
-        // Simplemente enviamos. La página se recargará y volverá con ?enviado=1
         form.submit();
     }
 
