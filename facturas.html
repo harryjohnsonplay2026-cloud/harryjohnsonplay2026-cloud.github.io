@@ -1,212 +1,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitud de Facturación</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
 <style>
+    /* ... (TUS MISMOS ESTILOS DE ANTES, NO HACE FALTA CAMBIARLOS) ... */
     :root {
-        --color-primary: #fbff0a;   /* Amarillo OrthoPlay */
-        --color-secondary: #04217f; /* Azul Oscuro OrthoPlay */
+        --color-primary: #fbff0a;
+        --color-secondary: #04217f;
         --color-text: #333;
         --color-bg: #f4f4f4;
     }
-
     * { box-sizing: border-box; }
-
-    body {
-        font-family: "Libre Franklin", sans-serif;
-        background-color: var(--color-bg);
-        margin: 0;
-        padding: 20px;
-        color: var(--color-text);
-    }
-
-    /* Contenedor Principal */
-    .factura-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        border-top: 5px solid var(--color-secondary);
-        position: relative;
-    }
-
-    h2 {
-        color: var(--color-secondary);
-        text-align: center;
-        margin-bottom: 25px;
-    }
-
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    @media (max-width: 600px) {
-        .form-grid { grid-template-columns: 1fr; }
-    }
-
+    body { font-family: "Libre Franklin", sans-serif; background-color: var(--color-bg); margin: 0; padding: 20px; color: var(--color-text); }
+    .factura-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--color-secondary); position: relative; }
+    h2 { color: var(--color-secondary); text-align: center; margin-bottom: 25px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
     .form-group { margin-bottom: 15px; }
     .form-group.full-width { grid-column: 1 / -1; }
-
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 600;
-        font-size: 0.9em;
-        color: var(--color-secondary);
-    }
-
-    input, select, textarea {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-family: inherit;
-        font-size: 14px;
-    }
-
-    input:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: var(--color-secondary);
-        box-shadow: 0 0 5px rgba(4, 33, 127, 0.2);
-    }
-
-    /* Botón de envío */
-    .btn-submit {
-        background-color: var(--color-secondary);
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        font-size: 16px;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-        width: 100%;
-        transition: background 0.3s;
-        margin-top: 10px;
-    }
-
+    label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: var(--color-secondary); }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--color-secondary); box-shadow: 0 0 5px rgba(4, 33, 127, 0.2); }
+    .btn-submit { background-color: var(--color-secondary); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; transition: background 0.3s; margin-top: 10px; }
     .btn-submit:hover { background-color: #031655; }
-
-    /* Ayuda y Éxito */
-    .help-section {
-        text-align: center;
-        margin-top: 20px;
-        font-size: 0.9em;
-        color: #666;
-    }
-
-    .btn-help {
-        display: inline-block;
-        background-color: #e0e0e0;
-        color: var(--color-secondary);
-        padding: 8px 15px;
-        border-radius: 20px;
-        text-decoration: none;
-        font-weight: bold;
-        margin-top: 5px;
-        transition: 0.3s;
-        border: none;
-        cursor: pointer;
-    }
+    .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
+    .btn-help { display: inline-block; background-color: #e0e0e0; color: var(--color-secondary); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 5px; transition: 0.3s; border: none; cursor: pointer; }
+    .btn-help:hover { background-color: var(--color-primary); color: var(--color-secondary); }
     
-    .btn-help:hover {
-        background-color: var(--color-primary);
-        color: var(--color-secondary);
-    }
-
-    /* PANTALLA DE ÉXITO */
-    .success-message {
-        display: none;
-        text-align: center;
-        padding: 40px;
-    }
-    
-    .success-icon {
-        font-size: 50px;
-        color: var(--color-secondary);
-        margin-bottom: 20px;
-    }
-
     /* MODAL DE CONFIRMACIÓN */
-    .modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6);
-        z-index: 1000;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .modal-box {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
-
-    .modal-buttons {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .btn-confirm {
-        background-color: var(--color-primary);
-        color: var(--color-secondary);
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-
-    .btn-cancel {
-        background-color: #ddd;
-        color: #333;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+    .btn-confirm { background-color: var(--color-primary); color: var(--color-secondary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    .btn-cancel { background-color: #ddd; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+    
     /* Spinner */
-    .loader {
-        display: none;
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid var(--color-primary);
-        border-radius: 50%;
-        width: 30px; height: 30px;
-        animation: spin 1s linear infinite;
-        margin: 20px auto;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
+    .loader { display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--color-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
 
 <div class="factura-container">
-    <div id="successView" class="success-message">
-        <div class="success-icon">✓</div>
-        <h3 style="color: var(--color-secondary)">¡Solicitud Recibida!</h3>
-        <p>Hemos recibido tus datos y archivos correctamente.</p>
-        <p><strong>Tu factura será enviada al correo proporcionado en breve.</strong></p>
-        <button class="btn-help" onclick="location.reload()">Enviar otra solicitud</button>
-    </div>
-
     <div id="formView">
         <h2>Solicitud de Facturación</h2>
         
@@ -215,7 +51,8 @@
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
             <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_next" value="https://formsubmit.co/confirm/">
+            
+            <input type="hidden" name="_next" value=""> 
 
             <div class="form-grid">
                 <div class="form-group full-width">
@@ -338,7 +175,7 @@
         
         <div id="modalBtns" class="modal-buttons">
             <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="submitFormReal()">Sí, Enviar</button>
+            <button class="btn-confirm" onclick="submitFormNative()">Sí, Enviar</button>
         </div>
     </div>
 </div>
@@ -347,8 +184,6 @@
     // Referencias al DOM
     const form = document.getElementById('billingForm');
     const modal = document.getElementById('confirmModal');
-    const formView = document.getElementById('formView');
-    const successView = document.getElementById('successView');
     const loader = document.getElementById('loaderSpinner');
     const modalBtns = document.getElementById('modalBtns');
     const selectCFDI = document.getElementById('usoCfdiSelect');
@@ -368,59 +203,36 @@
         });
     }
 
-    // Funciones del Modal
-    function closeModal() {
-        if(modal) modal.style.display = 'none';
-    }
-
+    // Mostrar modal
     function showModal() {
-        if(modal) modal.style.display = 'flex';
+        modal.style.display = 'flex';
     }
 
-    // Interceptar envío del formulario
-    if(form) {
-        form.addEventListener('submit', function(e) {
-            // Intenta detener el envío normal para mostrar el modal
-            // Si el script falla o es bloqueado, esta línea no corre y el form se envía normal (gracias al input _next)
-            e.preventDefault(); 
-            showModal();
-        });
+    // Cerrar modal
+    function closeModal() {
+        modal.style.display = 'none';
     }
 
-    // Envío Real (AJAX)
-    function submitFormReal() {
+    // INTERCEPTAR el botón de envío
+    form.addEventListener('submit', function(e) {
+        // Evitamos que se envíe inmediatamente para mostrar el modal
+        e.preventDefault(); 
+        
+        // Aquí podrías validar que los campos estén llenos si quisieras
+        // Pero como tienen 'required' en HTML, el navegador lo suele hacer antes de lanzar el evento submit
+        showModal();
+    });
+
+    // ENVÍO NATIVO (LA SOLUCIÓN AL ERROR DE POST)
+    function submitFormNative() {
+        // 1. Ocultar botones y mostrar spinner
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
 
-        const formData = new FormData(form);
-
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: { 'Accept': 'application/json' }
-        })
-        .then(response => {
-            if (response.ok) {
-                closeModal();
-                form.reset();
-                formView.style.display = 'none';
-                successView.style.display = 'block';
-            } else {
-                alert("Hubo un error al enviar. Por favor intenta de nuevo.");
-                closeModal();
-                resetModalState();
-            }
-        })
-        .catch(error => {
-            // Si falla el AJAX (bloqueo de CORS), forzamos el envío tradicional
-            console.error('Error AJAX, intentando envío tradicional', error);
-            form.submit(); // Envío clásico HTML
-        });
-    }
-
-    function resetModalState() {
-        loader.style.display = 'none';
-        modalBtns.style.display = 'flex';
+        // 2. Forzar el envío nativo del formulario
+        // Al usar form.submit() directamente desde JS, se envía como POST
+        // y se salta el preventDefault que pusimos arriba.
+        form.submit();
     }
 
     // Cerrar modal click afuera
