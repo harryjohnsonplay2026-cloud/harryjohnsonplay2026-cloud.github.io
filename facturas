@@ -1,0 +1,345 @@
+<p><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></p>
+<title></title>
+<link href="https://fonts.googleapis.com" rel="preconnect" />
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet" />
+<style type="text/css">:root {
+            --color-primary: #fbff0a;    /* Amarillo */
+            --color-secondary: #04217f;  /* Azul Oscuro */
+            --color-text: #333;
+            --color-bg: #f4f4f4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Libre Franklin", sans-serif;
+            background-color: var(--color-bg);
+            margin: 0;
+            padding: 20px;
+            color: var(--color-text);
+        }
+
+        /* Contenedor Principal */
+        .factura-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-top: 5px solid var(--color-secondary);
+            position: relative;
+        }
+
+        h2 {
+            color: var(--color-secondary);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* En móvil, una sola columna */
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9em;
+            color: var(--color-secondary);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 5px rgba(4, 33, 127, 0.2);
+        }
+
+        /* Botón de envío */
+        .btn-submit {
+            background-color: var(--color-secondary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: #031655;
+        }
+
+        /* Botón de Ayuda Flotante (Dentro del contenedor o fuera, según prefieras) */
+        .help-section {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .btn-help {
+            display: inline-block;
+            background-color: #e0e0e0;
+            color: var(--color-secondary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 5px;
+            transition: 0.3s;
+        }
+        
+        .btn-help:hover {
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+        }
+
+        /* MODAL DE CONFIRMACIÓN */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-confirm {
+            background-color: var(--color-primary);
+            color: var(--color-secondary); /* Contraste alto */
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel {
+            background-color: #ddd;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* PANTALLA DE ÉXITO */
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .success-icon {
+            font-size: 50px;
+            color: var(--color-secondary);
+            margin-bottom: 20px;
+        }
+
+        /* Spinner de carga */
+        .loader {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--color-primary);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+</style>
+<div class="factura-container">
+<div class="success-message" id="successView">
+<div class="success-icon">✓</div>
+
+<h3 style="color: var(--color-secondary)">¡Información Recibida!</h3>
+
+<p>Hemos recibido tus datos correctamente.</p>
+
+<p><strong>Tan pronto tengamos tu factura lista, será enviada al correo electrónico que nos proporcionaste.</strong></p>
+<button class="btn-help" onclick="location.reload()">Enviar otra solicitud</button></div>
+
+<div id="formView">
+<h2>Solicitud de Facturación</h2>
+
+
+<form action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" enctype="multipart/form-data" id="billingForm" method="POST"><input name="_captcha" type="hidden" value="false" /> <input name="_subject" type="hidden" value="Nueva Solicitud de Factura" /> <input name="_template" type="hidden" value="table" />
+<div class="form-grid">
+<div class="form-group full-width"><label>Nombre Completo del Paciente / Razón Social</label> <input name="Nombre" placeholder="Ej. Juan Pérez" required="" type="text" /></div>
+
+<div class="form-group"><label>Número de Contacto</label> <input name="Telefono" placeholder="Ej. 782 123 4567" required="" type="tel" /></div>
+
+<div class="form-group"><label>Correo Electrónico (para envío de factura)</label> <input name="Email" placeholder="ejemplo@correo.com" required="" type="email" /></div>
+
+<div class="form-group full-width"><label>Sucursal donde fue atendido</label> <select name="Sucursal" required=""><option disabled="disabled" selected="selected" value="">Selecciona una clínica...</option> <optgroup label="Veracruz"><option value="Poza Rica, Ver">Poza Rica</option><option value="Tuxpan, Ver">Tuxpan</option><option value="Papantla, Ver">Papantla</option><option value="Coyutla, Ver">Coyutla</option><option value="Zamora, Ver">Gutiérrez Zamora</option><option value="Martinez de la Torre, Ver">Martínez de la Torre</option><option value="Cardel, Ver">Cardel</option><option value="Orizaba, Ver">Orizaba</option> </optgroup> <optgroup label="Puebla"><option value="Teziutlan, Pue">Teziutlán</option><option value="Zacatlan, Pue">Zacatlán</option><option value="Cd. de Libres, Pue">Cd. de Libres</option><option value="Huauchinango, Pue">Huauchinango</option> </optgroup> <optgroup label="Hidalgo"><option value="Pachuca, Hgo">Pachuca</option><option value="Tulancingo, Hgo">Tulancingo</option> </optgroup> <optgroup label="Yucatán"><option value="Merida, Yuc">Mérida</option><option value="Kanasin, Yuc">Kanasín</option><option value="Valladolid, Yuc">Valladolid</option> </optgroup> <optgroup label="Estado de México"><option value="Toluca, Edomex">Toluca</option> </optgroup> <optgroup label="Michoacán"><option value="Cd. Hidalgo, Mich">Cd. Hidalgo</option><option value="Maravatio, Mich">Maravatío</option><option value="Zitacuaro, Mich">Zitácuaro</option> </optgroup> <optgroup label="Morelos"><option value="Cuernavaca, Mor">Cuernavaca</option> </optgroup> </select></div>
+
+<div class="form-group"><label>Forma de Pago</label> <select name="FormaPago" required=""><option value="Efectivo">Efectivo</option><option value="Transferencia">Transferencia Electrónica</option><option value="Tarjeta Debito">Tarjeta de Débito</option><option value="Tarjeta Credito">Tarjeta de Crédito</option> </select></div>
+
+<div class="form-group"><label>Uso del CFDI</label> <select id="usoCfdiSelect" name="UsoCFDI" required=""><option value="G03 - Gastos en general">G03 - Gastos en general</option><option value="D01 - Honorarios médicos">D01 - Honorarios médicos, dentales y hospitalarios</option><option value="S01 - Sin efectos fiscales">S01 - Sin efectos fiscales</option><option value="Otro">Otro (Especificar)</option> </select> <input id="otroCfdiInput" name="UsoCFDI_Especificado" placeholder="Por favor especifica el uso del CFDI (Ej. G01)" style="display: none; margin-top: 10px;" type="text" /></div>
+
+<div class="form-group"><label>Comprobante de Pago (Img/PDF)</label> <input accept="image/*,.pdf" name="ComprobantePago" required="" type="file" /></div>
+
+<div class="form-group"><label>Constancia Situación Fiscal (Img/PDF)</label> <input accept="image/*,.pdf" name="ConstanciaFiscal" required="" type="file" /></div>
+
+<div class="form-group full-width"><label>Datos extra o Descripción</label><textarea name="Notas" placeholder="Si necesitas especificar algo más, escríbelo aquí..." rows="3"></textarea></div>
+</div>
+
+<div class="help-section">¿Tienes dudas con tu factura?<br />
+<a class="btn-help" href="tel:7822198942">📞 782 219 8942</a></div>
+<button class="btn-submit" type="submit">Solicitar Factura</button></form>
+</div>
+</div>
+
+<div class="modal-overlay" id="confirmModal">
+<div class="modal-box">
+<h3 style="color:var(--color-secondary)">Confirmar Datos</h3>
+
+<p>¿Estás seguro que la información y los archivos adjuntos son correctos?</p>
+
+<div class="loader" id="loaderSpinner">&nbsp;</div>
+
+<div class="modal-buttons" id="modalBtns"><button class="btn-cancel" onclick="closeModal()">Cancelar</button><button class="btn-confirm" onclick="submitFormReal()">Sí, Enviar</button></div>
+</div>
+</div>
+<script>
+    const form = document.getElementById('billingForm');
+    const modal = document.getElementById('confirmModal');
+    const formView = document.getElementById('formView');
+    const successView = document.getElementById('successView');
+    const loader = document.getElementById('loaderSpinner');
+    const modalBtns = document.getElementById('modalBtns');
+
+    // Lógica para mostrar/ocultar el campo "Otro" en CFDI
+    const selectCFDI = document.getElementById('usoCfdiSelect');
+    const inputCFDI = document.getElementById('otroCfdiInput');
+
+    selectCFDI.addEventListener('change', function() {
+        if (this.value === 'Otro') {
+            inputCFDI.style.display = 'block';
+            inputCFDI.required = true; // Se vuelve obligatorio llenar este campo
+        } else {
+            inputCFDI.style.display = 'none';
+            inputCFDI.required = false; // Ya no es obligatorio
+            inputCFDI.value = ''; // Borramos lo que haya escrito para no enviar basura
+        }
+    });
+
+    // 1. Interceptar el envío
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Detener envío automático
+        modal.style.display = 'flex'; // Mostrar modal
+    });
+
+    // 2. Función para cerrar modal
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+    // 3. Función para enviar realmente (AJAX)
+    function submitFormReal() {
+        // Mostrar spinner y ocultar botones
+        loader.style.display = 'block';
+        modalBtns.style.display = 'none';
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Éxito
+                closeModal();
+                form.reset(); // Limpiar formulario
+                formView.style.display = 'none'; // Ocultar form
+                successView.style.display = 'block'; // Mostrar éxito
+            } else {
+                alert("Hubo un error al enviar. Por favor intenta de nuevo.");
+                closeModal();
+                resetModalState();
+            }
+        })
+        .catch(error => {
+            alert("Hubo un error de conexión.");
+            console.error(error);
+            closeModal();
+            resetModalState();
+        });
+    }
+
+    function resetModalState() {
+        loader.style.display = 'none';
+        modalBtns.style.display = 'flex';
+    }
+
+    // Cerrar modal si se hace clic afuera
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
