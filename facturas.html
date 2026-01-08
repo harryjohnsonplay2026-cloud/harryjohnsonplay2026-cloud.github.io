@@ -9,12 +9,10 @@
     :root { --color-primary: #fbff0a; --color-secondary: #04217f; --color-text: #333; --color-bg: #f4f4f4; }
     * { box-sizing: border-box; }
     
-    /* Agregamos touch-action para mejorar la respuesta en móviles */
     body { 
         font-family: "Libre Franklin", sans-serif; 
         background-color: var(--color-bg); 
-        margin: 0; 
-        padding: 20px; 
+        margin: 0; padding: 20px; 
         color: var(--color-text);
         touch-action: manipulation; 
     }
@@ -28,12 +26,10 @@
     label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: var(--color-secondary); }
     input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 14px; }
     
-    /* Evitar que el input haga zoom automático en iOS/Android al enfocar */
     input:focus, select:focus, textarea:focus { 
-        outline: none; 
-        border-color: var(--color-secondary); 
+        outline: none; border-color: var(--color-secondary); 
         box-shadow: 0 0 5px rgba(4, 33, 127, 0.2); 
-        font-size: 16px; /* Truco para evitar zoom en iOS */
+        font-size: 16px; 
     }
 
     .btn-submit { background-color: var(--color-secondary); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
@@ -68,11 +64,15 @@
     <div id="formView">
         <h2>Solicitud de Facturación</h2>
         
-        <form id="billingForm" action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data">
+        <iframe name="hiddenFrame" style="display:none;"></iframe>
+
+        <form id="billingForm" action="https://formsubmit.co/cris.ordonez.santiago@gmail.com" method="POST" enctype="multipart/form-data" target="hiddenFrame">
             
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
             <input type="hidden" name="_template" value="table">
+            
+            <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html"> 
 
             <div class="form-grid">
                 <div class="form-group full-width">
@@ -195,7 +195,7 @@
         
         <div id="modalBtns" class="modal-buttons">
             <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="enviarFormularioAJAX()">Sí, Enviar</button>
+            <button class="btn-confirm" onclick="enviarFormularioIframe()">Sí, Enviar</button>
         </div>
     </div>
 </div>
@@ -209,7 +209,11 @@
     const successView = document.getElementById('successView');
     const selectCFDI = document.getElementById('usoCfdiSelect');
     const inputCFDI = document.getElementById('otroCfdiInput');
+    
+    // Bandera para saber si ya estamos enviando
+    let enviando = false;
 
+    // Lógica "Otro" CFDI
     if(selectCFDI) {
         selectCFDI.addEventListener('change', function() {
             if (this.value === 'Otro') {
@@ -232,40 +236,33 @@
     }
 
     function cerrarModal() {
-        modal.style.display = 'none';
+        if (!enviando) { // Solo dejar cerrar si no estamos a medio envío
+            modal.style.display = 'none';
+        }
     }
 
-    window.onclick = function(event) {
-        if (event.target == modal) cerrarModal();
-    }
-
-    function enviarFormularioAJAX() {
+    // === LÓGICA DE ENVÍO CON IFRAME (SOLUCIÓN ARCHIVOS) ===
+    function enviarFormularioIframe() {
+        enviando = true;
         loader.style.display = 'block';
         modalBtns.style.display = 'none';
 
-        const formData = new FormData(form);
-
-        fetch("https://formsubmit.co/ajax/cris.ordonez.santiago@gmail.com", {
-            method: "POST",
-            body: formData,
-            headers: { 
-                'Accept': 'application/json' 
-            }
-        })
-        .then(response => {
-            if (response.ok) {
+        // 1. Escuchar cuando el iframe termine de cargar (eso significa que el envío terminó)
+        const iframe = document.getElementsByName('hiddenFrame')[0];
+        
+        // Función que se ejecuta al terminar el envío
+        iframe.onload = function() {
+            if (enviando) { // Verificar que realmente estábamos enviando
                 cerrarModal();
+                // Forzar cierre manual del modal en UI
+                modal.style.display = 'none';
                 mostrarExito();
-            } else {
-                alert("Hubo un error al enviar. Intenta de nuevo.");
-                restaurarModal();
+                enviando = false;
             }
-        })
-        .catch(error => {
-            console.log(error);
-            alert("Error de conexión.");
-            restaurarModal();
-        });
+        };
+
+        // 2. Enviar el formulario de forma nativa hacia el iframe
+        form.submit();
     }
 
     function mostrarExito() {
@@ -278,10 +275,15 @@
     function reiniciarFormulario() {
         successView.style.display = 'none';
         formView.style.display = 'block';
+        enviando = false;
     }
 
     function restaurarModal() {
         loader.style.display = 'none';
         modalBtns.style.display = 'flex';
+    }
+
+    window.onclick = function(event) {
+        if (event.target == modal) cerrarModal();
     }
 </script>
