@@ -80,29 +80,33 @@
         // Verificamos si la llave es correcta
         if (llaveRecibida === LLAVE_SECRETA) {
             
-            // --- LIMPIEZA DE RASTRO (ESTO ES LO NUEVO) ---
-            // Esto borra "?acceso=..." de la barra del navegador instantáneamente
-            // El usuario solo verá "facturas.html"
+            // --- LIMPIEZA DE RASTRO ---
+            // Borra la llave de la URL visualmente
             window.history.replaceState({}, document.title, window.location.pathname);
-            // ---------------------------------------------
 
-            // Si es correcta, mostramos la página
+            // Mostramos la página
             document.addEventListener("DOMContentLoaded", function() {
                 document.body.style.display = "block";
             });
         } else {
-            // Si es incorrecta (o si alguien copia el link limpio), bloqueamos
+            // --- MENSAJE DE ERROR PERSONALIZADO ---
+            // Sobreescribimos el cuerpo de la página con el mensaje que pediste
             document.write('<div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px; background-color:#f4f4f4;">');
-            document.write('<div style="font-size:60px;">🔒</div>');
-            document.write('<h2 style="color:#333; margin-top:20px;">Acceso Protegido</h2>');
-            document.write('<p style="color:#666; max-width:400px; line-height:1.5;">Por seguridad, este formulario <b>solo puede abrirse desde la App Oficial OrthoPlay</b>.</p>');
-            document.write('<p style="color:#888; font-size:14px; margin-top:20px;">Si eres miembro, abre la sección "Facturas" dentro de la aplicación.</p>');
+            
+            // Icono de alerta
+            document.write('<div style="font-size:60px;">⚠️</div>');
+            
+            // Título
+            document.write('<h2 style="color:#d32f2f; margin-top:20px;">Token Inválido</h2>');
+            
+            // Mensaje explicativo
+            document.write('<p style="color:#333; font-size:18px; max-width:400px; line-height:1.5;">Por favor, vuelva a acceder desde la <strong>App OrthoPlay</strong>.</p>');
+            
             document.write('</div>');
             
-            // Detenemos la carga del resto
+            // Detenemos la carga del resto de elementos
             window.stop();
         }
-  
     </script>
 </head>
 
