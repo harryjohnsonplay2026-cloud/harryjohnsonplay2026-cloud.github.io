@@ -18,7 +18,7 @@
             margin: 0; padding: 20px; 
             color: var(--color-text);
             touch-action: manipulation; 
-            /* Ocultamos todo por defecto hasta verificar la llave */
+            /* Ocultamos todo por defecto hasta que el Javascript diga lo contrario */
             display: none; 
         }
 
@@ -70,43 +70,39 @@
     </style>
 
     <script>
-        // Esta es la llave que debe venir en el link del botón de la App
-        var LLAVE_SECRETA = "app_ortho_2026_seguro";
+        document.addEventListener("DOMContentLoaded", function() {
+            var LLAVE_SECRETA = "app_ortho_2026_seguro";
+            var urlParams = new URLSearchParams(window.location.search);
+            var llaveRecibida = urlParams.get('acceso');
 
-        // Obtenemos los parámetros de la URL
-        var urlParams = new URLSearchParams(window.location.search);
-        var llaveRecibida = urlParams.get('acceso');
-
-        // Verificamos si la llave es correcta
-        if (llaveRecibida === LLAVE_SECRETA) {
+            // CASO 1: LA LLAVE ES CORRECTA
+            if (llaveRecibida === LLAVE_SECRETA) {
+                // Borramos la llave de la barra de direcciones
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // IMPORTANTE: Aquí hacemos visible el formulario
+                document.body.style.display = "block"; 
+            } 
             
-            // --- LIMPIEZA DE RASTRO ---
-            // Borra la llave de la URL visualmente
-            window.history.replaceState({}, document.title, window.location.pathname);
-
-            // Mostramos la página
-            document.addEventListener("DOMContentLoaded", function() {
+            // CASO 2: LA LLAVE ES INCORRECTA (O NO EXISTE)
+            else {
+                // Preparamos el mensaje de error
+                var errorHTML = `
+                    <div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px; background-color:#f4f4f4;">
+                        <div style="font-size:60px;">⚠️</div>
+                        <h2 style="color:#d32f2f; margin-top:20px;">Token Inválido</h2>
+                        <p style="color:#333; font-size:18px; max-width:400px; line-height:1.5;">Por favor, vuelva a acceder desde la <strong>App OrthoPlay</strong>.</p>
+                        <p style="color:#666; font-size:14px; margin-top:10px;">Acceso restringido por seguridad.</p>
+                    </div>
+                `;
+                
+                // Reemplazamos todo el contenido del cuerpo con el mensaje de error
+                document.body.innerHTML = errorHTML;
+                
+                // IMPORTANTE: Forzamos a que el cuerpo sea visible para mostrar el error
                 document.body.style.display = "block";
-            });
-        } else {
-            // --- MENSAJE DE ERROR PERSONALIZADO ---
-            // Sobreescribimos el cuerpo de la página con el mensaje que pediste
-            document.write('<div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px; background-color:#f4f4f4;">');
-            
-            // Icono de alerta
-            document.write('<div style="font-size:60px;">⚠️</div>');
-            
-            // Título
-            document.write('<h2 style="color:#d32f2f; margin-top:20px;">Token Inválido</h2>');
-            
-            // Mensaje explicativo
-            document.write('<p style="color:#333; font-size:18px; max-width:400px; line-height:1.5;">Por favor, vuelva a acceder desde la <strong>App OrthoPlay</strong>.</p>');
-            
-            document.write('</div>');
-            
-            // Detenemos la carga del resto de elementos
-            window.stop();
-        }
+            }
+        });
     </script>
 </head>
 
@@ -278,15 +274,12 @@
 
         // DETECTAR SI VENIMOS DE UN ENVÍO EXITOSO
         window.onload = function() {
+            // Ya no usamos window.onload para el display, porque lo maneja el script de seguridad de arriba
+            // Solo verificamos si es un envío exitoso
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.has('enviado')) {
-                // Al cargar con éxito, mantenemos el body visible
-                document.body.style.display = "block";
-                
                 formView.style.display = 'none';
                 successView.style.display = 'block';
-                // Limpiamos la URL visualmente pero sin recargar
-                // Nota: Mantenemos la key internamente por si acaso
             }
         };
 
