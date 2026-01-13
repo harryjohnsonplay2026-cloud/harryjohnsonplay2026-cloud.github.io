@@ -79,20 +79,30 @@
 
         // Verificamos si la llave es correcta
         if (llaveRecibida === LLAVE_SECRETA) {
+            
+            // --- LIMPIEZA DE RASTRO (ESTO ES LO NUEVO) ---
+            // Esto borra "?acceso=..." de la barra del navegador instantáneamente
+            // El usuario solo verá "facturas.html"
+            window.history.replaceState({}, document.title, window.location.pathname);
+            // ---------------------------------------------
+
             // Si es correcta, mostramos la página
             document.addEventListener("DOMContentLoaded", function() {
                 document.body.style.display = "block";
             });
         } else {
-            // Si es incorrecta, sobreescribimos el cuerpo para borrar el formulario
-            document.write('<div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px;">');
-            document.write('<h1 style="color:#04217f; font-size:50px;">🚫</h1>');
-            document.write('<h2 style="color:#333;">Acceso Restringido</h2>');
-            document.write('<p style="color:#666;">Este formulario solo es accesible desde la App Oficial de OrthoPlay.</p>');
+            // Si es incorrecta (o si alguien copia el link limpio), bloqueamos
+            document.write('<div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px; background-color:#f4f4f4;">');
+            document.write('<div style="font-size:60px;">🔒</div>');
+            document.write('<h2 style="color:#333; margin-top:20px;">Acceso Protegido</h2>');
+            document.write('<p style="color:#666; max-width:400px; line-height:1.5;">Por seguridad, este formulario <b>solo puede abrirse desde la App Oficial OrthoPlay</b>.</p>');
+            document.write('<p style="color:#888; font-size:14px; margin-top:20px;">Si eres miembro, abre la sección "Facturas" dentro de la aplicación.</p>');
             document.write('</div>');
-            // Detenemos la ejecución del resto de scripts
+            
+            // Detenemos la carga del resto
             window.stop();
         }
+  
     </script>
 </head>
 
