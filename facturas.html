@@ -1,306 +1,346 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Solicitud de Facturación</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Solicitud de Facturación</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
-<style>
-    :root { --color-primary: #fbff0a; --color-secondary: #04217f; --color-text: #333; --color-bg: #f4f4f4; }
-    * { box-sizing: border-box; }
-    
-    body { 
-        font-family: "Libre Franklin", sans-serif; 
-        background-color: var(--color-bg); 
-        margin: 0; padding: 20px; 
-        color: var(--color-text);
-        touch-action: manipulation; 
-    }
-
-    .factura-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--color-secondary); position: relative; }
-    h2 { color: var(--color-secondary); text-align: center; margin-bottom: 25px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
-    .form-group { margin-bottom: 15px; }
-    .form-group.full-width { grid-column: 1 / -1; }
-    label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: var(--color-secondary); }
-    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 14px; }
-    
-    input:focus, select:focus, textarea:focus { 
-        outline: none; border-color: var(--color-secondary); 
-        box-shadow: 0 0 5px rgba(4, 33, 127, 0.2); 
-        font-size: 16px; 
-    }
-
-    .btn-submit { background-color: var(--color-secondary); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
-    .btn-submit:hover { background-color: #031655; }
-    .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
-    .btn-help { display: inline-block; background-color: #e0e0e0; color: var(--color-secondary); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 5px; border: none; cursor: pointer; }
-    
-    /* CAJA DE AVISO */
-    .alert-box {
-        background-color: #fffde7;
-        border-left: 5px solid var(--color-primary);
-        padding: 15px;
-        margin-bottom: 25px;
-        border-radius: 4px;
-        font-size: 0.9em;
-        color: #555;
-        line-height: 1.5;
-    }
-    .alert-title { color: var(--color-secondary); font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.1em; }
-
-    /* PANTALLA DE ÉXITO */
-    .success-message { display: none; text-align: center; padding: 40px; }
-    .success-icon { font-size: 50px; color: var(--color-secondary); margin-bottom: 20px; }
-
-    /* MODAL */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
-    .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-    .modal-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-    .btn-confirm { background-color: var(--color-primary); color: var(--color-secondary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    .btn-cancel { background-color: #ddd; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
-    .loader { display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--color-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-</style>
-
-<div class="factura-container">
-    
-    <div id="successView" class="success-message">
-        <div class="success-icon">✓</div>
-        <h3 style="color: var(--color-secondary)">¡Solicitud Recibida!</h3>
-        <p>Hemos recibido tus archivos correctamente.</p>
-        <p>Tu factura llegará a tu correo en breve.</p>
-        <button class="btn-help" onclick="location.href='https://harryjohnsonplay2026-cloud.github.io/facturas.html'">Enviar otra solicitud</button>
-    </div>
-
-    <div id="formView">
-        <h2>Solicitud de Facturación</h2>
+    <style>
+        :root { --color-primary: #fbff0a; --color-secondary: #04217f; --color-text: #333; --color-bg: #f4f4f4; }
+        * { box-sizing: border-box; }
         
-        <div class="alert-box">
-            <span class="alert-title">⚠️ Información Importante</span>
-            • Solo se pueden facturar servicios del <strong>mes en curso</strong>.<br>
-            • Verifica que tus datos fiscales sean correctos.<br>
-            • Límite total de archivos: <strong>10 MB</strong>.
+        body { 
+            font-family: "Libre Franklin", sans-serif; 
+            background-color: var(--color-bg); 
+            margin: 0; padding: 20px; 
+            color: var(--color-text);
+            touch-action: manipulation; 
+            /* Ocultamos todo por defecto hasta verificar la llave */
+            display: none; 
+        }
+
+        .factura-container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--color-secondary); position: relative; }
+        h2 { color: var(--color-secondary); text-align: center; margin-bottom: 25px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .form-group { margin-bottom: 15px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9em; color: var(--color-secondary); }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: inherit; font-size: 14px; }
+        
+        input:focus, select:focus, textarea:focus { 
+            outline: none; border-color: var(--color-secondary); 
+            box-shadow: 0 0 5px rgba(4, 33, 127, 0.2); 
+            font-size: 16px; 
+        }
+
+        .btn-submit { background-color: var(--color-secondary); color: white; border: none; padding: 15px 30px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
+        .btn-submit:hover { background-color: #031655; }
+        .help-section { text-align: center; margin-top: 20px; font-size: 0.9em; color: #666; }
+        .btn-help { display: inline-block; background-color: #e0e0e0; color: var(--color-secondary); padding: 8px 15px; border-radius: 20px; text-decoration: none; font-weight: bold; margin-top: 5px; border: none; cursor: pointer; }
+        
+        /* CAJA DE AVISO */
+        .alert-box {
+            background-color: #fffde7;
+            border-left: 5px solid var(--color-primary);
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #555;
+            line-height: 1.5;
+        }
+        .alert-title { color: var(--color-secondary); font-weight: bold; display: block; margin-bottom: 5px; font-size: 1.1em; }
+
+        /* PANTALLA DE ÉXITO */
+        .success-message { display: none; text-align: center; padding: 40px; }
+        .success-icon { font-size: 50px; color: var(--color-secondary); margin-bottom: 20px; }
+
+        /* MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-box { background: white; padding: 30px; border-radius: 10px; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
+        .btn-confirm { background-color: var(--color-primary); color: var(--color-secondary); border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-cancel { background-color: #ddd; color: #333; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .loader { display: none; border: 4px solid #f3f3f3; border-top: 4px solid var(--color-primary); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <script>
+        // Esta es la llave que debe venir en el link del botón de la App
+        var LLAVE_SECRETA = "app_ortho_2026_seguro";
+
+        // Obtenemos los parámetros de la URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var llaveRecibida = urlParams.get('acceso');
+
+        // Verificamos si la llave es correcta
+        if (llaveRecibida === LLAVE_SECRETA) {
+            // Si es correcta, mostramos la página
+            document.addEventListener("DOMContentLoaded", function() {
+                document.body.style.display = "block";
+            });
+        } else {
+            // Si es incorrecta, sobreescribimos el cuerpo para borrar el formulario
+            document.write('<div style="display:flex; height:100vh; justify-content:center; align-items:center; flex-direction:column; font-family:sans-serif; text-align:center; padding:20px;">');
+            document.write('<h1 style="color:#04217f; font-size:50px;">🚫</h1>');
+            document.write('<h2 style="color:#333;">Acceso Restringido</h2>');
+            document.write('<p style="color:#666;">Este formulario solo es accesible desde la App Oficial de OrthoPlay.</p>');
+            document.write('</div>');
+            // Detenemos la ejecución del resto de scripts
+            window.stop();
+        }
+    </script>
+</head>
+
+<body>
+    <div class="factura-container">
+        
+        <div id="successView" class="success-message">
+            <div class="success-icon">✓</div>
+            <h3 style="color: var(--color-secondary)">¡Solicitud Recibida!</h3>
+            <p>Hemos recibido tus archivos correctamente.</p>
+            <p>Tu factura llegará a tu correo en breve.</p>
+            <button class="btn-help" onclick="location.href='https://harryjohnsonplay2026-cloud.github.io/facturas.html?acceso=app_ortho_2026_seguro'">Enviar otra solicitud</button>
         </div>
 
-        <form id="billingForm" action="https://formsubmit.co/facturacion@orthoplay.com.mx" method="POST" enctype="multipart/form-data">
+        <div id="formView">
+            <h2>Solicitud de Facturación</h2>
             
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
-            <input type="hidden" name="_template" value="table">
-            
-            <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html?enviado=1"> 
+            <div class="alert-box">
+                <span class="alert-title">⚠️ Información Importante</span>
+                • Solo se pueden facturar servicios del <strong>mes en curso</strong>.<br>
+                • Verifica que tus datos fiscales sean correctos.<br>
+                • Límite total de archivos: <strong>10 MB</strong>.
+            </div>
 
-            <div class="form-grid">
-                <div class="form-group full-width">
-                    <label>Nombre Completo del Paciente / Razón Social</label>
-                    <input type="text" name="Nombre" placeholder="Ej. Juan Pérez" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Número de Contacto</label>
-                    <input type="tel" name="Telefono" placeholder="Ej. 782 123 4567" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Correo Electrónico (para envío)</label>
-                    <input type="email" name="Email" placeholder="ejemplo@correo.com" required>
-                </div>
-
-                <div class="form-group full-width">
-                    <label>Sucursal donde fue atendido</label>
-                    <select name="Sucursal" required>
-                        <option value="" disabled selected>Selecciona una clínica...</option>
-                        <optgroup label="Veracruz">
-                            <option value="Poza Rica, Ver">Poza Rica</option>
-                            <option value="Tuxpan, Ver">Tuxpan</option>
-                            <option value="Papantla, Ver">Papantla</option>
-                            <option value="Coyutla, Ver">Coyutla</option>
-                            <option value="Zamora, Ver">Gutiérrez Zamora</option>
-                            <option value="Martinez de la Torre, Ver">Martínez de la Torre</option>
-                            <option value="Cardel, Ver">Cardel</option>
-                            <option value="Orizaba, Ver">Orizaba</option>
-                        </optgroup>
-                        <optgroup label="Puebla">
-                            <option value="Teziutlan, Pue">Teziutlán</option>
-                            <option value="Zacatlan, Pue">Zacatlán</option>
-                            <option value="Cd. de Libres, Pue">Cd. de Libres</option>
-                            <option value="Huauchinango, Pue">Huauchinango</option>
-                        </optgroup>
-                        <optgroup label="Hidalgo">
-                            <option value="Pachuca, Hgo">Pachuca</option>
-                            <option value="Tulancingo, Hgo">Tulancingo</option>
-                        </optgroup>
-                        <optgroup label="Yucatán">
-                            <option value="Merida, Yuc">Mérida</option>
-                            <option value="Kanasin, Yuc">Kanasín</option>
-                            <option value="Valladolid, Yuc">Valladolid</option>
-                        </optgroup>
-                        <optgroup label="Estado de México">
-                            <option value="Toluca, Edomex">Toluca</option>
-                        </optgroup>
-                        <optgroup label="Michoacán">
-                            <option value="Cd. Hidalgo, Mich">Cd. Hidalgo</option>
-                            <option value="Maravatio, Mich">Maravatío</option>
-                            <option value="Zitacuaro, Mich">Zitácuaro</option>
-                        </optgroup>
-                        <optgroup label="Morelos">
-                            <option value="Cuernavaca, Mor">Cuernavaca</option>
-                        </optgroup>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Forma de Pago</label>
-                    <select name="FormaPago" required>
-                        <option value="Efectivo">Efectivo</option>
-                        <option value="Transferencia">Transferencia Electrónica</option>
-                        <option value="Tarjeta Debito">Tarjeta de Débito</option>
-                        <option value="Tarjeta Credito">Tarjeta de Crédito</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Uso del CFDI</label>
-                    <select name="UsoCFDI" id="usoCfdiSelect" required>
-                        <option value="G03 - Gastos en general">G03 - Gastos en general</option>
-                        <option value="D01 - Honorarios médicos">D01 - Honorarios médicos...</option>
-                        <option value="S01 - Sin efectos fiscales">S01 - Sin efectos fiscales</option>
-                        <option value="Otro">Otro (Especificar)</option>
-                    </select>
-                    <input type="text" name="UsoCFDI_Especificado" id="otroCfdiInput" placeholder="Especifique (Ej. G01)" style="display: none; margin-top: 10px;">
-                </div>
-
-                <div class="form-group">
-                    <label>Ticket(s) de la Clínica (Img/PDF)</label>
-                    <input type="file" name="TicketClinica" id="fileTicket" accept="image/*,.pdf" multiple required>
-                    <small style="font-size:0.75em; color:#666;">Selecciona varios si es necesario.</small>
-                </div>
+            <form id="billingForm" action="https://formsubmit.co/facturacion@orthoplay.com.mx" method="POST" enctype="multipart/form-data">
                 
-                <div class="form-group">
-                    <label>Voucher / Pago (Opcional)</label>
-                    <input type="file" name="VoucherPago" id="fileVoucher" accept="image/*,.pdf" multiple>
-                    <small style="font-size:0.75em; color:#666;">Adjunta tus comprobantes bancarios</small>
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_subject" value="Nueva Solicitud de Factura - OrthoPlay">
+                <input type="hidden" name="_template" value="table">
+                
+                <input type="hidden" name="_next" value="https://harryjohnsonplay2026-cloud.github.io/facturas.html?enviado=1&acceso=app_ortho_2026_seguro"> 
+
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label>Nombre Completo del Paciente / Razón Social</label>
+                        <input type="text" name="Nombre" placeholder="Ej. Juan Pérez" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Número de Contacto</label>
+                        <input type="tel" name="Telefono" placeholder="Ej. 782 123 4567" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Correo Electrónico (para envío)</label>
+                        <input type="email" name="Email" placeholder="ejemplo@correo.com" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Sucursal donde fue atendido</label>
+                        <select name="Sucursal" required>
+                            <option value="" disabled selected>Selecciona una clínica...</option>
+                            <optgroup label="Veracruz">
+                                <option value="Poza Rica, Ver">Poza Rica</option>
+                                <option value="Tuxpan, Ver">Tuxpan</option>
+                                <option value="Papantla, Ver">Papantla</option>
+                                <option value="Coyutla, Ver">Coyutla</option>
+                                <option value="Zamora, Ver">Gutiérrez Zamora</option>
+                                <option value="Martinez de la Torre, Ver">Martínez de la Torre</option>
+                                <option value="Cardel, Ver">Cardel</option>
+                                <option value="Orizaba, Ver">Orizaba</option>
+                            </optgroup>
+                            <optgroup label="Puebla">
+                                <option value="Teziutlan, Pue">Teziutlán</option>
+                                <option value="Zacatlan, Pue">Zacatlán</option>
+                                <option value="Cd. de Libres, Pue">Cd. de Libres</option>
+                                <option value="Huauchinango, Pue">Huauchinango</option>
+                            </optgroup>
+                            <optgroup label="Hidalgo">
+                                <option value="Pachuca, Hgo">Pachuca</option>
+                                <option value="Tulancingo, Hgo">Tulancingo</option>
+                            </optgroup>
+                            <optgroup label="Yucatán">
+                                <option value="Merida, Yuc">Mérida</option>
+                                <option value="Kanasin, Yuc">Kanasín</option>
+                                <option value="Valladolid, Yuc">Valladolid</option>
+                            </optgroup>
+                            <optgroup label="Estado de México">
+                                <option value="Toluca, Edomex">Toluca</option>
+                            </optgroup>
+                            <optgroup label="Michoacán">
+                                <option value="Cd. Hidalgo, Mich">Cd. Hidalgo</option>
+                                <option value="Maravatio, Mich">Maravatío</option>
+                                <option value="Zitacuaro, Mich">Zitácuaro</option>
+                            </optgroup>
+                            <optgroup label="Morelos">
+                                <option value="Cuernavaca, Mor">Cuernavaca</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Forma de Pago</label>
+                        <select name="FormaPago" required>
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia Electrónica</option>
+                            <option value="Tarjeta Debito">Tarjeta de Débito</option>
+                            <option value="Tarjeta Credito">Tarjeta de Crédito</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Uso del CFDI</label>
+                        <select name="UsoCFDI" id="usoCfdiSelect" required>
+                            <option value="G03 - Gastos en general">G03 - Gastos en general</option>
+                            <option value="D01 - Honorarios médicos">D01 - Honorarios médicos...</option>
+                            <option value="S01 - Sin efectos fiscales">S01 - Sin efectos fiscales</option>
+                            <option value="Otro">Otro (Especificar)</option>
+                        </select>
+                        <input type="text" name="UsoCFDI_Especificado" id="otroCfdiInput" placeholder="Especifique (Ej. G01)" style="display: none; margin-top: 10px;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ticket(s) de la Clínica (Img/PDF)</label>
+                        <input type="file" name="TicketClinica" id="fileTicket" accept="image/*,.pdf" multiple required>
+                        <small style="font-size:0.75em; color:#666;">Selecciona varios si es necesario.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Voucher / Pago (Opcional)</label>
+                        <input type="file" name="VoucherPago" id="fileVoucher" accept="image/*,.pdf" multiple>
+                        <small style="font-size:0.75em; color:#666;">Adjunta tus comprobantes bancarios</small>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Constancia Situación Fiscal (Img/PDF)</label>
+                        <input type="file" name="ConstanciaFiscal" id="fileConstancia" accept="image/*,.pdf" required>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>Datos extra o Descripción</label>
+                        <textarea name="Notas" rows="3" placeholder="Si necesitas especificar algo más..."></textarea>
+                    </div>
                 </div>
 
-                <div class="form-group full-width">
-                    <label>Constancia Situación Fiscal (Img/PDF)</label>
-                    <input type="file" name="ConstanciaFiscal" id="fileConstancia" accept="image/*,.pdf" required>
+                <div class="help-section">
+                    ¿Tienes dudas con tu factura?<br>
+                    <a href="tel:7822198942" class="btn-help">📞 782 219 8942</a>
                 </div>
 
-                <div class="form-group full-width">
-                    <label>Datos extra o Descripción</label>
-                    <textarea name="Notas" rows="3" placeholder="Si necesitas especificar algo más..."></textarea>
-                </div>
-            </div>
-
-            <div class="help-section">
-                ¿Tienes dudas con tu factura?<br>
-                <a href="tel:7822198942" class="btn-help">📞 782 219 8942</a>
-            </div>
-
-            <button type="button" class="btn-submit" onclick="abrirModalConfirmacion()">Solicitar Factura</button>
-        </form>
-    </div>
-</div>
-
-<div id="confirmModal" class="modal-overlay">
-    <div class="modal-box">
-        <h3 style="color:var(--color-secondary)">Confirmar Datos</h3>
-        <p>¿Estás seguro que la información y los archivos son correctos?</p>
-        
-        <div id="loaderSpinner" class="loader">&nbsp;</div>
-        
-        <div id="modalBtns" class="modal-buttons">
-            <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
-            <button class="btn-confirm" onclick="enviarFormularioNativo()">Sí, Enviar</button>
+                <button type="button" class="btn-submit" onclick="abrirModalConfirmacion()">Solicitar Factura</button>
+            </form>
         </div>
     </div>
-</div>
 
-<script>
-    const form = document.getElementById('billingForm');
-    const modal = document.getElementById('confirmModal');
-    const loader = document.getElementById('loaderSpinner');
-    const modalBtns = document.getElementById('modalBtns');
-    const formView = document.getElementById('formView');
-    const successView = document.getElementById('successView');
-    const selectCFDI = document.getElementById('usoCfdiSelect');
-    const inputCFDI = document.getElementById('otroCfdiInput');
+    <div id="confirmModal" class="modal-overlay">
+        <div class="modal-box">
+            <h3 style="color:var(--color-secondary)">Confirmar Datos</h3>
+            <p>¿Estás seguro que la información y los archivos son correctos?</p>
+            
+            <div id="loaderSpinner" class="loader">&nbsp;</div>
+            
+            <div id="modalBtns" class="modal-buttons">
+                <button class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-confirm" onclick="enviarFormularioNativo()">Sí, Enviar</button>
+            </div>
+        </div>
+    </div>
 
-    // DETECTAR SI VENIMOS DE UN ENVÍO EXITOSO
-    window.onload = function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('enviado')) {
-            formView.style.display = 'none';
-            successView.style.display = 'block';
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-    };
+    <script>
+        const form = document.getElementById('billingForm');
+        const modal = document.getElementById('confirmModal');
+        const loader = document.getElementById('loaderSpinner');
+        const modalBtns = document.getElementById('modalBtns');
+        const formView = document.getElementById('formView');
+        const successView = document.getElementById('successView');
+        const selectCFDI = document.getElementById('usoCfdiSelect');
+        const inputCFDI = document.getElementById('otroCfdiInput');
 
-    if(selectCFDI) {
-        selectCFDI.addEventListener('change', function() {
-            if (this.value === 'Otro') {
-                inputCFDI.style.display = 'block';
-                inputCFDI.required = true;
-            } else {
-                inputCFDI.style.display = 'none';
-                inputCFDI.required = false;
-                inputCFDI.value = '';
+        // DETECTAR SI VENIMOS DE UN ENVÍO EXITOSO
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('enviado')) {
+                // Al cargar con éxito, mantenemos el body visible
+                document.body.style.display = "block";
+                
+                formView.style.display = 'none';
+                successView.style.display = 'block';
+                // Limpiamos la URL visualmente pero sin recargar
+                // Nota: Mantenemos la key internamente por si acaso
             }
-        });
-    }
+        };
 
-    // VALIDACIÓN DE PESO (10MB TOTAL)
-    function validarPesoArchivos() {
-        const inputs = [
-            document.getElementById('fileTicket'),
-            document.getElementById('fileVoucher'),
-            document.getElementById('fileConstancia')
-        ];
-        
-        let totalSize = 0;
-        
-        inputs.forEach(input => {
-            if (input && input.files) {
-                for (let i = 0; i < input.files.length; i++) {
-                    totalSize += input.files[i].size;
+        if(selectCFDI) {
+            selectCFDI.addEventListener('change', function() {
+                if (this.value === 'Otro') {
+                    inputCFDI.style.display = 'block';
+                    inputCFDI.required = true;
+                } else {
+                    inputCFDI.style.display = 'none';
+                    inputCFDI.required = false;
+                    inputCFDI.value = '';
                 }
+            });
+        }
+
+        // VALIDACIÓN DE PESO (10MB TOTAL)
+        function validarPesoArchivos() {
+            const inputs = [
+                document.getElementById('fileTicket'),
+                document.getElementById('fileVoucher'),
+                document.getElementById('fileConstancia')
+            ];
+            
+            let totalSize = 0;
+            
+            inputs.forEach(input => {
+                if (input && input.files) {
+                    for (let i = 0; i < input.files.length; i++) {
+                        totalSize += input.files[i].size;
+                    }
+                }
+            });
+
+            const totalMB = totalSize / (1024 * 1024);
+            
+            if (totalMB > 10) { 
+                alert("⚠️ Archivos muy pesados (" + totalMB.toFixed(2) + " MB).\n\nEl límite total es de 10 MB.\nPor favor sube archivos más ligeros.");
+                return false;
             }
-        });
-
-        const totalMB = totalSize / (1024 * 1024);
-        
-        if (totalMB > 10) { 
-            alert("⚠️ Archivos muy pesados (" + totalMB.toFixed(2) + " MB).\n\nEl límite total es de 10 MB.\nPor favor sube archivos más ligeros.");
-            return false;
+            return true;
         }
-        return true;
-    }
 
-    function abrirModalConfirmacion() {
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
+        function abrirModalConfirmacion() {
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            if (!validarPesoArchivos()) {
+                return;
+            }
+            modal.style.display = 'flex';
         }
-        if (!validarPesoArchivos()) {
-            return;
+
+        function cerrarModal() {
+            modal.style.display = 'none';
         }
-        modal.style.display = 'flex';
-    }
 
-    function cerrarModal() {
-        modal.style.display = 'none';
-    }
+        function enviarFormularioNativo() {
+            loader.style.display = 'block';
+            modalBtns.style.display = 'none';
+            form.submit();
+        }
 
-    function enviarFormularioNativo() {
-        loader.style.display = 'block';
-        modalBtns.style.display = 'none';
-        form.submit();
-    }
+        window.onclick = function(event) {
+            if (event.target == modal) cerrarModal();
+        }
+    </script>
 
-    window.onclick = function(event) {
-        if (event.target == modal) cerrarModal();
-    }
-</script>
+</body>
+</html>
